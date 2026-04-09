@@ -50,7 +50,7 @@ public class ItemESP extends Module {
     ));
 
     public ItemESP() {
-        super(GlazedAddon.CATEGORY, "item-Esp", "ESP Module that highlights only certain items.");
+        super(GlazedAddon.esp, "item-Esp", "ESP Module that highlights only certain items.");
     }
 
     // ── General Settings ───────────────────────────────────────────────────

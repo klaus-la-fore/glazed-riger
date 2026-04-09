@@ -103,6 +103,7 @@ public class GlazedAddon extends MeteorAddon {
         Modules.get().add(new AutoTreeFarmer());
         Modules.get().add(new LayerLock());
         Modules.get().add(new ItemESP());
+        Modules.get().add(new FastXP());
     }
 
     @EventHandler
