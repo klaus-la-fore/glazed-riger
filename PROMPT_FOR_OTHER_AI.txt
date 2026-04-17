@@ -1,0 +1,23 @@
+I need you to analyze Minecraft 1.21.4 with Yarn mappings and answer the questions in the attached YARN_MAPPINGS_QUESTIONS.md file.
+
+TASK:
+1. Read the YARN_MAPPINGS_QUESTIONS.md file carefully
+2. For each question, find the correct Yarn mapping names by examining Minecraft 1.21.4 source code
+3. Fill in ALL blanks with exact class names, method names, and signatures
+4. Create a new file called YARN_MAPPINGS_ANSWERS.md with all answers filled in
+
+REQUIREMENTS:
+- Use EXACT Yarn mapping names (not Mojang mappings)
+- Include full package paths
+- Provide complete method signatures
+- Check all checkboxes where applicable
+- If something doesn't exist in 1.21.4, write "NOT FOUND" and suggest the closest alternative
+
+OUTPUT FORMAT:
+Create YARN_MAPPINGS_ANSWERS.md with the same structure as the questions file, but with all blanks filled in. Keep the markdown formatting intact.
+
+CRITICAL: The answers must be 100% accurate for Minecraft 1.21.4 with Yarn mappings build 1.21.4+build.1
+
+Here is the questions file:
+
+[Attach YARN_MAPPINGS_QUESTIONS.md]
