@@ -10,7 +10,8 @@
     "protection.TranslationStorageAccessor",
     "protection.DecoderHandlerMixin",
     "protection.ClientConnectionMixin",
-    "protection.TranslationStorageMixin"
+    "protection.TranslationStorageMixin",
+    "protection.ServerResourcePackLoaderMixin"
   ],
   "server": [],
   "injectors": {

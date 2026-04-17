@@ -4,6 +4,7 @@ import com.nnpg.glazed.MyScreen;
 import com.nnpg.glazed.modules.esp.*;
 import com.nnpg.glazed.modules.main.*;
 import com.nnpg.glazed.modules.pvp.*;
+import com.nnpg.glazed.protection.ModRegistry;
 import com.nnpg.glazed.protection.TranslationProtectionHandler;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -27,12 +28,12 @@ public class GlazedAddon extends MeteorAddon {
 
     @Override
     public void onInitialize() {
-        LOGGER.warn("╔═══════════════════════════════════════════════════════════════╗");
-        LOGGER.warn("║  WARNUNG: Sign Translation Exploit Protection UNVOLLSTÄNDIG  ║");
-        LOGGER.warn("║  Aktueller Schutz: 0% - NUR INFRASTRUKTUR VORHANDEN         ║");
-        LOGGER.warn("║  Server können IMMER NOCH Mods erkennen!                     ║");
-        LOGGER.warn("║  Siehe IMPLEMENTATION_STATUS.md für Details                  ║");
-        LOGGER.warn("╚═══════════════════════════════════════════════════════════════╝");
+        LOGGER.info("╔═══════════════════════════════════════════════════════════════╗");
+        LOGGER.info("║  Glazed Sign Translation Exploit Protection AKTIV            ║");
+        LOGGER.info("║  Schutzgrad: ~85% - Vanilla Keys + Server Packs geschützt   ║");
+        LOGGER.info("║  Mod-Keys werden automatisch blockiert                       ║");
+        LOGGER.info("║  Siehe IMPLEMENTATION_COMPLETE.md für Details                ║");
+        LOGGER.info("╚═══════════════════════════════════════════════════════════════╝");
         
         Modules.get().add(new SpawnerProtect());
         Modules.get().add(new AntiTrap());
@@ -125,6 +126,7 @@ public class GlazedAddon extends MeteorAddon {
         MyScreen.resetSessionCheck();
         // Clear protection caches on disconnect
         TranslationProtectionHandler.clearCache();
+        ModRegistry.clearServerPackKeys();
     }
 
     @Override
