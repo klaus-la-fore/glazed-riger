@@ -2,7 +2,7 @@ package com.nnpg.glazed.modules.main;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.nnpg.glazed.GlazedAddon;
+import com.nnpg.glazed.addon.GlazedAddon;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import net.minecraft.util.math.BlockPos;

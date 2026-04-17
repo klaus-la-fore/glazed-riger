@@ -1,6 +1,6 @@
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.GlazedAddon;
+import com.nnpg.glazed.addon.GlazedAddon;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.settings.StringListSetting;

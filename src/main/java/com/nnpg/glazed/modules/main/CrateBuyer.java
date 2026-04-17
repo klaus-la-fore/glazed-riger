@@ -1,6 +1,6 @@
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.GlazedAddon;
+import com.nnpg.glazed.addon.GlazedAddon;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.EnumSetting;

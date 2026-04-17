@@ -1,6 +1,6 @@
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.GlazedAddon;
+import com.nnpg.glazed.addon.GlazedAddon;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;

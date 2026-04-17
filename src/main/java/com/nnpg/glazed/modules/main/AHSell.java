@@ -1,6 +1,6 @@
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.GlazedAddon;
+import com.nnpg.glazed.addon.GlazedAddon;
 import com.nnpg.glazed.VersionUtil;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent;
