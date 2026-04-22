@@ -1,8 +1,5 @@
 package com.nnpg.glazed.protection;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,68 +30,15 @@ public class TranslationProtectionHandler {
 
     private static final int MAX_DEDUPE_ENTRIES = 500;
 
-    private static volatile long lastHeaderTime = 0;
-    private static volatile boolean headerPending = false;
-
-    private static final long HEADER_COOLDOWN_MS = 5000;
-
     private TranslationProtectionHandler() {}
 
     public static void notifyExploitDetected() {
-        long now = System.currentTimeMillis();
-
-        if (now - lastHeaderTime < HEADER_COOLDOWN_MS) {
-            return;
-        }
-
-        headerPending = true;
-    }
-
-    private static void emitHeader() {
-        String source = PacketContext.getPacketName();
-
-        MinecraftClient mc = MinecraftClient.getInstance();
-        Runnable sendAlert = () -> {
-            if (mc.player != null) {
-                mc.player.sendMessage(
-                    Text.literal("[Glazed Protection] ").formatted(Formatting.DARK_PURPLE)
-                        .append(Text.literal("Key resolution probe detected").formatted(Formatting.RED)),
-                    false);
-            }
-        };
-        if (mc.isOnThread()) {
-            sendAlert.run();
-        } else {
-            mc.execute(sendAlert);
-        }
-
-        LOGGER.info("[Glazed Protection] Key resolution exploit detected via {}", source);
+        // Chat alerts disabled as per user request. 
+        // Security logging is still handled via logDetection.
     }
 
     public static void sendDetail(InterceptionType type, String keyName, String originalValue, String spoofedValue) {
-        if (alertedKeys.size() >= MAX_DEDUPE_ENTRIES) {
-            alertedKeys.clear();
-        }
-
-        if (!alertedKeys.add(new AlertDedupeKey(type, keyName))) {
-            return;
-        }
-
-        if (headerPending) {
-            headerPending = false;
-            lastHeaderTime = System.currentTimeMillis();
-            emitHeader();
-        }
-
-        MinecraftClient mc = MinecraftClient.getInstance();
-        mc.execute(() -> {
-            if (mc.player != null) {
-                mc.player.sendMessage(
-                    Text.literal("[" + keyName + "] '" + originalValue + "'→'" + spoofedValue + "'")
-                        .formatted(Formatting.DARK_GRAY),
-                    false);
-            }
-        });
+        // Chat details disabled as per user request.
     }
 
     public static void sendDetailDebug(InterceptionType type, String keyName, String originalValue, String spoofedValue) {
@@ -116,16 +60,8 @@ public class TranslationProtectionHandler {
             type.getDisplayName(), packetName, keyName, originalValue, spoofedValue);
     }
 
-    public static void clearDedup() {
-        alertedKeys.clear();
-        loggedKeys.clear();
-        headerPending = false;
-    }
-
     public static void clearCache() {
         alertedKeys.clear();
         loggedKeys.clear();
-        lastHeaderTime = 0;
-        headerPending = false;
     }
 }

@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Intercepts TranslatableTextContent to block mod translation resolution.
@@ -28,6 +30,9 @@ import java.util.Map;
 @Mixin(value = TranslatableTextContent.class, priority = 1500)
 public abstract class TranslatableTextContentMixin {
 
+    @Unique
+    private static final Logger LOGGER = LoggerFactory.getLogger("Glazed-Protection");
+
     @Shadow @Final private String key;
     @Shadow @Final private String fallback;
 
@@ -38,6 +43,10 @@ public abstract class TranslatableTextContentMixin {
     private void glazed$tagFromPacket(String key, String fallback, Object[] args, CallbackInfo ci) {
         try {
             this.glazed$fromPacket = PacketContext.isProcessingPacket();
+            if (this.glazed$fromPacket) {
+                LOGGER.info("[Glazed-Debug] TranslatableTextContent created from packet: {} | key='{}' fallback='{}'", 
+                    PacketContext.getPacketName(), key, fallback);
+            }
         } catch (Throwable t) {
             // Ignore during early initialization
             this.glazed$fromPacket = false;
@@ -49,11 +58,38 @@ public abstract class TranslatableTextContentMixin {
     private static final String GLAZED_ALLOW_ORIGINAL = "\0__glazed_allow__";
 
     /**
-     * Wrap the Language.get(String, String) call in updateTranslations().
-     * This is the ONLY method that needs interception since get(String) internally calls get(String, String).
+     * Wrap the Language.get(String) call (single-arg version).
      */
     @WrapOperation(
-        method = "updateTranslations",
+        method = {
+            "decompose(Lnet/minecraft/text/LanguageVisitor;Lnet/minecraft/text/Style;)Ljava/util/Optional;",
+            "updateTranslations()V"
+        },
+        at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/util/Language;get(Ljava/lang/String;)Ljava/lang/String;"),
+        require = 0
+    )
+    private String glazed$wrapGetSingle(Language instance, String keyArg, Operation<String> original) {
+        // Early exit if not from packet
+        if (!this.glazed$fromPacket) {
+            return original.call(instance, keyArg);
+        }
+        
+        String result = glazed$handleTranslationLookup(keyArg, keyArg);
+        if (result == GLAZED_ALLOW_ORIGINAL) {
+            return original.call(instance, keyArg);
+        }
+        return result;
+    }
+
+    /**
+     * Wrap the Language.get(String, String) call (two-arg version with fallback).
+     */
+    @WrapOperation(
+        method = {
+            "decompose(Lnet/minecraft/text/LanguageVisitor;Lnet/minecraft/text/Style;)Ljava/util/Optional;",
+            "updateTranslations()V"
+        },
         at = @At(value = "INVOKE",
             target = "Lnet/minecraft/util/Language;get(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
         require = 0
@@ -86,9 +122,6 @@ public abstract class TranslatableTextContentMixin {
             // During early initialization, allow everything
             return GLAZED_ALLOW_ORIGINAL;
         }
-
-        // In exploit context — always notify
-        TranslationProtectionHandler.notifyExploitDetected();
 
         // Always allow vanilla keys
         if (ModRegistry.isVanillaTranslationKey(translationKey)) {
@@ -126,9 +159,7 @@ public abstract class TranslatableTextContentMixin {
     private void glazed$logBlocked(String translationKey, String defaultValue) {
         String originalValue = glazed$getRealTranslation(translationKey, defaultValue);
 
-        if (!originalValue.equals(defaultValue)) {
-            TranslationProtectionHandler.sendDetail(InterceptionType.TRANSLATION, translationKey, originalValue, defaultValue);
-        }
+        // Security logging (console only)
         TranslationProtectionHandler.logDetection(InterceptionType.TRANSLATION, translationKey, originalValue, defaultValue);
     }
 

@@ -29,7 +29,7 @@ public class ServerResourcePackLoaderMixin {
      * We mark this event so TranslationStorageMixin can identify server pack keys.
      */
     @Inject(
-        method = "loadServerPack",
+        method = "loadServerPack(Lnet/minecraft/resource/ResourcePackProfile;Ljava/util/List;)V",
         at = @At("HEAD"),
         require = 0
     )
@@ -38,11 +38,10 @@ public class ServerResourcePackLoaderMixin {
             List<ResourcePackProfile> profiles,
             CallbackInfo ci) {
         try {
-            LOGGER.debug("[Glazed Protection] Server resource pack loading: {}", 
+            LOGGER.info("[Glazed Protection] Server resource pack loading: {}", 
                 profile != null ? profile.getId() : "unknown");
-            ModRegistry.markServerPackLoading(true);
         } catch (Throwable t) {
-            LOGGER.error("[Glazed Protection] Error marking server pack load", t);
+            LOGGER.error("[Glazed Protection] Error in server pack load", t);
         }
     }
     
@@ -50,7 +49,7 @@ public class ServerResourcePackLoaderMixin {
      * Called after server resource packs are loaded.
      */
     @Inject(
-        method = "loadServerPack",
+        method = "loadServerPack(Lnet/minecraft/resource/ResourcePackProfile;Ljava/util/List;)V",
         at = @At("RETURN"),
         require = 0
     )
@@ -59,8 +58,7 @@ public class ServerResourcePackLoaderMixin {
             List<ResourcePackProfile> profiles,
             CallbackInfo ci) {
         try {
-            ModRegistry.markServerPackLoading(false);
-            LOGGER.info("[Glazed Protection] Server resource pack loaded, keys will be tracked as server pack keys");
+            LOGGER.info("[Glazed Protection] Server resource pack load complete");
         } catch (Throwable t) {
             LOGGER.error("[Glazed Protection] Error after server pack load", t);
         }

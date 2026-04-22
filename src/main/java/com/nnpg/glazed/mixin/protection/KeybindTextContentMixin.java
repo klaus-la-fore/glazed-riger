@@ -50,7 +50,8 @@ public class KeybindTextContentMixin {
      */
     @WrapOperation(
         method = "getTranslated",
-        at = @At(value = "INVOKE", target = "Ljava/util/function/Supplier;get()Ljava/lang/Object;")
+        at = @At(value = "INVOKE", target = "Ljava/util/function/Supplier;get()Ljava/lang/Object;"),
+        require = 0
     )
     private Object glazed$interceptKeybind(Supplier<?> supplier, Operation<Object> original) {
         try {
@@ -61,8 +62,6 @@ public class KeybindTextContentMixin {
             // During early initialization, allow everything
             return original.call(supplier);
         }
-
-        TranslationProtectionHandler.notifyExploitDetected();
 
         // Vanilla keybind - return cached default
         if (KeybindDefaults.hasDefault(key)) {
@@ -97,9 +96,7 @@ public class KeybindTextContentMixin {
     private void glazed$logBlocked(String keybindName, String spoofedValue) {
         String realValue = glazed$readKeybindDisplay();
 
-        if (!realValue.equals(spoofedValue)) {
-            TranslationProtectionHandler.sendDetail(InterceptionType.KEYBIND, keybindName, realValue, spoofedValue);
-        }
+        // Security logging (console only)
         TranslationProtectionHandler.logDetection(InterceptionType.KEYBIND, keybindName, realValue, spoofedValue);
     }
 
@@ -114,7 +111,7 @@ public class KeybindTextContentMixin {
                 return display.getString();
             }
         } catch (Exception e) {
-            LOGGER.debug("[Glazed Protection] Failed to read keybind '{}': {}", key, e.getMessage());
+            LOGGER.info("[Glazed Protection] Failed to read keybind '{}': {}", key, e.getMessage());
         }
         return key;
     }

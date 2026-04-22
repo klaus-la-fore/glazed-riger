@@ -34,9 +34,6 @@ public class ModRegistry {
 
     private static volatile boolean initialized = false;
     
-    /** Flag to track if we're currently loading a server resource pack */
-    private static volatile boolean loadingServerPack = false;
-    
     private ModRegistry() {}
     
     // ==================== MOD INFO CLASS ====================
@@ -141,25 +138,12 @@ public class ModRegistry {
         serverPackKeys.clear();
         allKnownTranslationKeys.clear();
         translationKeyToModId.clear();
-        LOGGER.debug("[ModRegistry] Cleared translation key cache");
+        LOGGER.info("[ModRegistry] Cleared translation key cache");
     }
     
     public static void clearServerPackKeys() {
         serverPackKeys.clear();
-        LOGGER.debug("[ModRegistry] Cleared server pack keys");
-    }
-    
-    // ==================== SERVER PACK TRACKING ====================
-    
-    public static void markServerPackLoading(boolean loading) {
-        loadingServerPack = loading;
-        if (loading) {
-            LOGGER.debug("[ModRegistry] Server pack loading started");
-        }
-    }
-    
-    public static boolean isLoadingServerPack() {
-        return loadingServerPack;
+        LOGGER.info("[ModRegistry] Cleared server pack keys");
     }
     
     // ==================== KEYBIND TRACKING ====================
@@ -212,7 +196,7 @@ public class ModRegistry {
     
     public static void markInitialized() {
         initialized = true;
-        LOGGER.debug("[ModRegistry] Initialized with {} translation keys",
+        LOGGER.info("[ModRegistry] Initialized with {} translation keys",
             allKnownTranslationKeys.size());
     }
     

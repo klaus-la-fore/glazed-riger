@@ -28,12 +28,7 @@ public class GlazedAddon extends MeteorAddon {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("╔═══════════════════════════════════════════════════════════════╗");
-        LOGGER.info("║  Glazed Sign Translation Exploit Protection AKTIV            ║");
-        LOGGER.info("║  Schutzgrad: ~85% - Vanilla Keys + Server Packs geschützt   ║");
-        LOGGER.info("║  Mod-Keys werden automatisch blockiert                       ║");
-        LOGGER.info("║  Siehe IMPLEMENTATION_COMPLETE.md für Details                ║");
-        LOGGER.info("╚═══════════════════════════════════════════════════════════════╝");
+        LOGGER.debug("[Glazed] Initializing protection modules");
         
         Modules.get().add(new SpawnerProtect());
         Modules.get().add(new AntiTrap());

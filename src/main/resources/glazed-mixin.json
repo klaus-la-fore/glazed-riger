@@ -10,6 +10,8 @@
     "protection.TranslationStorageAccessor",
     "protection.DecoderHandlerMixin",
     "protection.ClientConnectionMixin",
+    "protection.PacketUtilsMixin",
+    "protection.SessionProtectionMixin",
     "protection.TranslationStorageMixin",
     "protection.ServerResourcePackLoaderMixin"
   ],
