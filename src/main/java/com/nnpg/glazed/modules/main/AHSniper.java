@@ -1,6 +1,6 @@
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.addon.GlazedAddon;
+import com.nnpg.glazed.GlazedAddon;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

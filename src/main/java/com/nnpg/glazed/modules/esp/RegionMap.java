@@ -1,6 +1,6 @@
 package com.nnpg.glazed.modules.esp;
 
-import com.nnpg.glazed.addon.GlazedAddon;
+import com.nnpg.glazed.GlazedAddon;
 import meteordevelopment.meteorclient.events.render.Render2DEvent;
 import meteordevelopment.meteorclient.renderer.Renderer2D;
 import meteordevelopment.meteorclient.renderer.text.TextRenderer;

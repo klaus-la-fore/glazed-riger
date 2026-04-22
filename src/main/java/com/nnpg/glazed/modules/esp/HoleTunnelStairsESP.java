@@ -1,6 +1,6 @@
 package com.nnpg.glazed.modules.esp;
 
-import com.nnpg.glazed.addon.GlazedAddon;
+import com.nnpg.glazed.GlazedAddon;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;

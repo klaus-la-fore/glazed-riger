@@ -1,6 +1,6 @@
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.addon.GlazedAddon;
+import com.nnpg.glazed.GlazedAddon;
 import com.nnpg.glazed.settings.RandomBetweenIntSetting;
 import com.nnpg.glazed.settings.TextDisplaySetting;
 import com.nnpg.glazed.utils.RandomBetweenInt;
