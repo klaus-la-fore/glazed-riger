@@ -1,6 +1,5 @@
 package com.nnpg.glazed.modules.esp;
 
-import com.nnpg.glazed.addon.GlazedAddon;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -29,6 +28,8 @@ import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.nnpg.glazed.GlazedAddon;
 
 public class WorldDiffESP extends Module {
 

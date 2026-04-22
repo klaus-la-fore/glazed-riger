@@ -1,6 +1,5 @@
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.addon.GlazedAddon;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -20,6 +19,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.nnpg.glazed.GlazedAddon;
 
 public class AutoShopOrder extends Module {
     private final MinecraftClient mc = MinecraftClient.getInstance();

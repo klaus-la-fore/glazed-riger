@@ -111,18 +111,6 @@ public class GlazedAddon extends MeteorAddon {
         Modules.get().add(new PremiumTunnelBaseFinder());
         Modules.get().add(new AdminList());
         Modules.get().add(new AutoTreeFarmer());
-        
-        // Restored modules
-        Modules.get().add(new AttributeSwapper());
-        Modules.get().add(new AutoBoneOrder());
-        Modules.get().add(new AutoShopOrder());
-        Modules.get().add(new BulkMoveToContainer());
-        Modules.get().add(new DwellEntitiesESP());
-        Modules.get().add(new JumpReset());
-        Modules.get().add(new MovementTest());
-        Modules.get().add(new RotationTestModule());
-        Modules.get().add(new ShopOrderBot());
-        Modules.get().add(new WorldDiffESP());
     }
 
     @Override

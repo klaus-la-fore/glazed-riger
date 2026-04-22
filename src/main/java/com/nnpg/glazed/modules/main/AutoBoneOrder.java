@@ -1,6 +1,5 @@
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.addon.GlazedAddon;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -22,6 +21,8 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.nnpg.glazed.GlazedAddon;
 
 public class AutoBoneOrder extends Module {
 

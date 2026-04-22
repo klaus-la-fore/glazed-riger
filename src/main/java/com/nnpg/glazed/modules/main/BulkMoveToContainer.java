@@ -1,7 +1,7 @@
 // com/nnpg/glazed/modules/main/BulkMoveToContainer.java
 package com.nnpg.glazed.modules.main;
 
-import com.nnpg.glazed.addon.GlazedAddon;
+import com.nnpg.glazed.GlazedAddon;
 import com.nnpg.glazed.mixins.ScreenHandlerAccessor;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.systems.modules.Module;
