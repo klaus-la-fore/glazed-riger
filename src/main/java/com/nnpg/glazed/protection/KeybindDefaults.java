@@ -3,15 +3,11 @@ package com.nnpg.glazed.protection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Cached default keybind values for vanilla Minecraft keybinds.
- * Used to return consistent default values when blocking custom keybind resolution.
- */
 public class KeybindDefaults {
     private static final Map<String, String> DEFAULTS = new HashMap<>();
-    
+
     static {
-        // Movement
+
         DEFAULTS.put("key.forward", "W");
         DEFAULTS.put("key.left", "A");
         DEFAULTS.put("key.back", "S");
@@ -19,15 +15,13 @@ public class KeybindDefaults {
         DEFAULTS.put("key.jump", "Space");
         DEFAULTS.put("key.sneak", "Left Shift");
         DEFAULTS.put("key.sprint", "Left Control");
-        
-        // Actions
+
         DEFAULTS.put("key.attack", "Left Button");
         DEFAULTS.put("key.use", "Right Button");
         DEFAULTS.put("key.pickItem", "Middle Button");
         DEFAULTS.put("key.drop", "Q");
         DEFAULTS.put("key.swapOffhand", "F");
-        
-        // Inventory
+
         DEFAULTS.put("key.inventory", "E");
         DEFAULTS.put("key.hotbar.1", "1");
         DEFAULTS.put("key.hotbar.2", "2");
@@ -38,8 +32,7 @@ public class KeybindDefaults {
         DEFAULTS.put("key.hotbar.7", "7");
         DEFAULTS.put("key.hotbar.8", "8");
         DEFAULTS.put("key.hotbar.9", "9");
-        
-        // UI
+
         DEFAULTS.put("key.chat", "T");
         DEFAULTS.put("key.playerlist", "Tab");
         DEFAULTS.put("key.command", "/");
@@ -48,22 +41,20 @@ public class KeybindDefaults {
         DEFAULTS.put("key.screenshot", "F2");
         DEFAULTS.put("key.fullscreen", "F11");
         DEFAULTS.put("key.spectatorOutlines", "");
-        
-        // Multiplayer
+
         DEFAULTS.put("key.saveToolbarActivator", "C");
         DEFAULTS.put("key.loadToolbarActivator", "X");
-        
-        // Misc
+
         DEFAULTS.put("key.smoothCamera", "");
     }
-    
+
     public static boolean hasDefault(String keybindName) {
         return keybindName != null && DEFAULTS.containsKey(keybindName);
     }
-    
+
     public static String getDefault(String keybindName) {
         return keybindName != null ? DEFAULTS.getOrDefault(keybindName, keybindName) : null;
     }
-    
+
     private KeybindDefaults() {}
 }

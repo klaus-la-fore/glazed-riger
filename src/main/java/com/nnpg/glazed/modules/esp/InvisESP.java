@@ -1,5 +1,6 @@
 package com.nnpg.glazed.modules.esp;
 
+import com.nnpg.glazed.addon.GlazedAddon;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.renderer.ShapeMode;
 import meteordevelopment.meteorclient.settings.*;
@@ -130,7 +131,7 @@ public class InvisESP extends Module {
     );
 
     public InvisESP() {
-        super(Categories.Render, "invis-esp", "Shows 3D hitbox for invisible players and mobs");
+        super(GlazedAddon.esp, "invis-esp", "Shows 3D hitbox for invisible players and mobs");
     }
 
     @Override

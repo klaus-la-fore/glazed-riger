@@ -6,10 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Centralized handler for key resolution protection alerts.
- * Permanently active protection against Sign Translation Exploit.
- */
 public class TranslationProtectionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger("Glazed-Protection");
 
@@ -33,16 +29,15 @@ public class TranslationProtectionHandler {
     private TranslationProtectionHandler() {}
 
     public static void notifyExploitDetected() {
-        // Chat alerts disabled as per user request. 
-        // Security logging is still handled via logDetection.
+
     }
 
     public static void sendDetail(InterceptionType type, String keyName, String originalValue, String spoofedValue) {
-        // Chat details disabled as per user request.
+
     }
 
     public static void sendDetailDebug(InterceptionType type, String keyName, String originalValue, String spoofedValue) {
-        // Debug mode not implemented in simplified version
+
     }
 
     public static void logDetection(InterceptionType type, String keyName, String originalValue, String spoofedValue) {

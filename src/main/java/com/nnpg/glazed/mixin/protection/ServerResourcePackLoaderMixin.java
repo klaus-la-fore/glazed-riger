@@ -14,20 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-/**
- * Tracks when server resource packs are loaded.
- * This allows us to mark keys from server packs as "safe" to resolve.
- */
 @Mixin(ServerResourcePackLoader.class)
 public class ServerResourcePackLoaderMixin {
-    
+
     @Unique
     private static final Logger LOGGER = LoggerFactory.getLogger("Glazed-Protection");
-    
-    /**
-     * Called when server resource packs are loaded.
-     * We mark this event so TranslationStorageMixin can identify server pack keys.
-     */
+
     @Inject(
         method = "loadServerPack(Lnet/minecraft/resource/ResourcePackProfile;Ljava/util/List;)V",
         at = @At("HEAD"),
@@ -38,16 +30,13 @@ public class ServerResourcePackLoaderMixin {
             List<ResourcePackProfile> profiles,
             CallbackInfo ci) {
         try {
-            LOGGER.info("[Glazed Protection] Server resource pack loading: {}", 
+            LOGGER.info("[Glazed Protection] Server resource pack loading: {}",
                 profile != null ? profile.getId() : "unknown");
         } catch (Throwable t) {
             LOGGER.error("[Glazed Protection] Error in server pack load", t);
         }
     }
-    
-    /**
-     * Called after server resource packs are loaded.
-     */
+
     @Inject(
         method = "loadServerPack(Lnet/minecraft/resource/ResourcePackProfile;Ljava/util/List;)V",
         at = @At("RETURN"),

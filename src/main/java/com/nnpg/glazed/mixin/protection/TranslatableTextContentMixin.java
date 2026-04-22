@@ -20,13 +20,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Intercepts TranslatableTextContent to block mod translation resolution.
- * Core component of Sign Translation Exploit protection - Layer 3.
- * 
- * Blocks resolution of mod translation keys when they come from network packets,
- * preventing servers from detecting installed mods.
- */
 @Mixin(value = TranslatableTextContent.class, priority = 1500)
 public abstract class TranslatableTextContentMixin {
 
@@ -44,22 +37,18 @@ public abstract class TranslatableTextContentMixin {
         try {
             this.glazed$fromPacket = PacketContext.isProcessingPacket();
             if (this.glazed$fromPacket) {
-                LOGGER.info("[Glazed-Debug] TranslatableTextContent created from packet: {} | key='{}' fallback='{}'", 
+                LOGGER.info("[Glazed-Debug] TranslatableTextContent created from packet: {} | key='{}' fallback='{}'",
                     PacketContext.getPacketName(), key, fallback);
             }
         } catch (Throwable t) {
-            // Ignore during early initialization
+
             this.glazed$fromPacket = false;
         }
     }
 
-    /** Sentinel value indicating the original call should proceed. */
     @Unique
     private static final String GLAZED_ALLOW_ORIGINAL = "\0__glazed_allow__";
 
-    /**
-     * Wrap the Language.get(String) call (single-arg version).
-     */
     @WrapOperation(
         method = {
             "decompose(Lnet/minecraft/text/LanguageVisitor;Lnet/minecraft/text/Style;)Ljava/util/Optional;",
@@ -70,11 +59,11 @@ public abstract class TranslatableTextContentMixin {
         require = 0
     )
     private String glazed$wrapGetSingle(Language instance, String keyArg, Operation<String> original) {
-        // Early exit if not from packet
+
         if (!this.glazed$fromPacket) {
             return original.call(instance, keyArg);
         }
-        
+
         String result = glazed$handleTranslationLookup(keyArg, keyArg);
         if (result == GLAZED_ALLOW_ORIGINAL) {
             return original.call(instance, keyArg);
@@ -82,9 +71,6 @@ public abstract class TranslatableTextContentMixin {
         return result;
     }
 
-    /**
-     * Wrap the Language.get(String, String) call (two-arg version with fallback).
-     */
     @WrapOperation(
         method = {
             "decompose(Lnet/minecraft/text/LanguageVisitor;Lnet/minecraft/text/Style;)Ljava/util/Optional;",
@@ -95,11 +81,11 @@ public abstract class TranslatableTextContentMixin {
         require = 0
     )
     private String glazed$wrapGet(Language instance, String keyArg, String fallbackArg, Operation<String> original) {
-        // Early exit if not from packet - avoid any class loading
+
         if (!this.glazed$fromPacket) {
             return original.call(instance, keyArg, fallbackArg);
         }
-        
+
         String result = glazed$handleTranslationLookup(keyArg, fallbackArg);
         if (result == GLAZED_ALLOW_ORIGINAL) {
             return original.call(instance, keyArg, fallbackArg);
@@ -107,65 +93,49 @@ public abstract class TranslatableTextContentMixin {
         return result;
     }
 
-    /**
-     * Shared handler for translation lookup interception.
-     */
     @Unique
     private String glazed$handleTranslationLookup(String translationKey, String defaultValue) {
-        // Safety check: Don't intercept during early initialization
+
         try {
-            // Not from a packet or in singleplayer — allow normal resolution
+
             if (!this.glazed$fromPacket || glazed$isIntegratedServerRunning()) {
                 return GLAZED_ALLOW_ORIGINAL;
             }
         } catch (Throwable t) {
-            // During early initialization, allow everything
+
             return GLAZED_ALLOW_ORIGINAL;
         }
 
-        // Always allow vanilla keys
         if (ModRegistry.isVanillaTranslationKey(translationKey)) {
             return GLAZED_ALLOW_ORIGINAL;
         }
 
-        // Allow server resource pack keys
         if (ModRegistry.isServerPackTranslationKey(translationKey)) {
             return GLAZED_ALLOW_ORIGINAL;
         }
 
-        // Block all mod keys - return fallback value
         String blockedValue = defaultValue;
         glazed$logBlocked(translationKey, blockedValue);
         return blockedValue;
     }
-    
-    /**
-     * Check if integrated server is running without triggering early class loading.
-     */
+
     @Unique
     private static boolean glazed$isIntegratedServerRunning() {
         try {
-            // Delay class loading until runtime
+
             return net.minecraft.client.MinecraftClient.getInstance().isIntegratedServerRunning();
         } catch (Exception e) {
             return false;
         }
     }
 
-    /**
-     * Log detection when a mod translation key is blocked.
-     */
     @Unique
     private void glazed$logBlocked(String translationKey, String defaultValue) {
         String originalValue = glazed$getRealTranslation(translationKey, defaultValue);
 
-        // Security logging (console only)
         TranslationProtectionHandler.logDetection(InterceptionType.TRANSLATION, translationKey, originalValue, defaultValue);
     }
 
-    /**
-     * Get the real translation value by directly accessing TranslationStorage's translations map.
-     */
     @Unique
     private String glazed$getRealTranslation(String translationKey, String defaultValue) {
         try {
@@ -176,7 +146,7 @@ public abstract class TranslatableTextContentMixin {
                 return value != null ? value : defaultValue;
             }
         } catch (Exception e) {
-            // Fallback to default
+
         }
         return defaultValue;
     }

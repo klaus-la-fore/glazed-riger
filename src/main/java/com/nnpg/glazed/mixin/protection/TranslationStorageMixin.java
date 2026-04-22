@@ -26,41 +26,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-/**
- * Tracks translation keys from language files by source.
- * CRITICAL component for Sign Translation Exploit protection.
- * 
- * This mixin intercepts language file loading to populate ModRegistry with:
- * - Vanilla translation keys (always allowed)
- * - Mod translation keys (blocked in exploit context)
- * - Server resource pack keys (allowed for vanilla resolution)
- * 
- * Uses proper pack type detection to accurately classify keys.
- */
 @Mixin(TranslationStorage.class)
 public class TranslationStorageMixin {
-    
+
     @Unique
     private static final Logger LOGGER = LoggerFactory.getLogger("Glazed-Protection");
-    
+
     @Unique
     private static boolean glazed$loggedOnce = false;
 
     @Unique
     private static final ThreadLocal<ResourcePack> CURRENT_PACK = new ThreadLocal<>();
-    
-    /**
-     * Clear translation key caches before loading new language.
-     */
+
     @Inject(
-        method = "load(Lnet/minecraft/resource/ResourceManager;Ljava/util/List;Z)Lnet/minecraft/client/resource/language/TranslationStorage;", 
+        method = "load(Lnet/minecraft/resource/ResourceManager;Ljava/util/List;Z)Lnet/minecraft/client/resource/language/TranslationStorage;",
         at = @At("HEAD"),
         require = 0
     )
     private static void glazed$onLoadStart(
-            ResourceManager resourceManager, 
+            ResourceManager resourceManager,
             List<String> definitions,
-            boolean rightToLeft, 
+            boolean rightToLeft,
             CallbackInfoReturnable<TranslationStorage> cir) {
         try {
             ModRegistry.clearTranslationKeys();
@@ -70,23 +56,20 @@ public class TranslationStorageMixin {
             LOGGER.error("[Glazed Protection] Error clearing translation keys", t);
         }
     }
-    
-    /**
-     * Mark initialization complete after loading.
-     */
+
     @Inject(
-        method = "load(Lnet/minecraft/resource/ResourceManager;Ljava/util/List;Z)Lnet/minecraft/client/resource/language/TranslationStorage;", 
+        method = "load(Lnet/minecraft/resource/ResourceManager;Ljava/util/List;Z)Lnet/minecraft/client/resource/language/TranslationStorage;",
         at = @At("RETURN"),
         require = 0
     )
     private static void glazed$onLoadComplete(
-            ResourceManager resourceManager, 
+            ResourceManager resourceManager,
             List<String> definitions,
-            boolean rightToLeft, 
+            boolean rightToLeft,
             CallbackInfoReturnable<TranslationStorage> cir) {
         try {
             ModRegistry.markInitialized();
-            
+
             if (!glazed$loggedOnce) {
                 glazed$loggedOnce = true;
                 LOGGER.info("[Glazed Protection] Translation system initialized - {} vanilla keys, {} server pack keys, {} total keys tracked",
@@ -96,7 +79,7 @@ public class TranslationStorageMixin {
             LOGGER.error("[Glazed Protection] Error in load complete", t);
         }
     }
-    
+
     @Inject(
         method = "load(Lnet/minecraft/resource/ResourceManager;Ljava/util/List;Z)Lnet/minecraft/client/resource/language/TranslationStorage;",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Language;load(Ljava/io/InputStream;Ljava/util/function/BiConsumer;)V"),
@@ -116,12 +99,12 @@ public class TranslationStorageMixin {
     private static ResourcePack glazed$getPackFromResource(Resource resource) {
         if (resource == null) return null;
         try {
-            // First try modern Yarn mapping 'getPack'
+
             var method = resource.getClass().getMethod("getPack");
             return (ResourcePack) method.invoke(resource);
         } catch (Throwable t) {
             try {
-                // Fallback to record accessor 'pack'
+
                 var method = resource.getClass().getMethod("pack");
                 return (ResourcePack) method.invoke(resource);
             } catch (Exception e) {
@@ -173,7 +156,7 @@ public class TranslationStorageMixin {
             if (FabricLoader.getInstance().getModContainer(packId).isPresent()) {
                 return packId;
             }
-            // Strip common prefixes
+
             String extractedModId = packId.replace("fabric/", "").replace("mod/", "");
             if (!extractedModId.isEmpty() && FabricLoader.getInstance().getModContainer(extractedModId).isPresent()) {
                 return extractedModId;
@@ -182,13 +165,9 @@ public class TranslationStorageMixin {
         return null;
     }
 
-    /**
-     * Intercept language file loading to track keys by source.
-     * Wraps the call to Language.load to intercept each key-value pair.
-     */
     @WrapOperation(
         method = "load(Lnet/minecraft/resource/ResourceManager;Ljava/util/List;Z)Lnet/minecraft/client/resource/language/TranslationStorage;",
-        at = @At(value = "INVOKE", 
+        at = @At(value = "INVOKE",
             target = "Lnet/minecraft/util/Language;load(Ljava/io/InputStream;Ljava/util/function/BiConsumer;)V"),
         require = 0
     )
@@ -202,17 +181,15 @@ public class TranslationStorageMixin {
     @Unique
     private static void glazed$trackKeyBySource(String key, String value) {
         ResourcePack pack = CURRENT_PACK.get();
-        
+
         try {
             if (pack != null) {
                 String packId = glazed$getPackId(pack);
-                
-                // Robust detection of Vanilla/Default packs using instanceof
+
                 boolean isVanillaPack = (pack instanceof DefaultResourcePack) || "vanilla".equals(packId);
-                
-                // Server packs usually have IDs starting with 'server/'
+
                 boolean isServerPack = packId != null && (packId.equals("server") || packId.startsWith("server/"));
-                
+
                 if (isVanillaPack) {
                     ModRegistry.recordVanillaTranslationKey(key);
                 } else if (isServerPack) {
@@ -222,7 +199,7 @@ public class TranslationStorageMixin {
                     if (modId != null) {
                         ModRegistry.recordTranslationKey(modId, key);
                     } else {
-                        // Restricted fallback: only if it's clearly a mod key pattern
+
                         String extracted = glazed$extractModId(key);
                         if (extracted != null) {
                             ModRegistry.recordTranslationKey(extracted, key);
@@ -231,20 +208,16 @@ public class TranslationStorageMixin {
                 }
             }
         } catch (Throwable t) {
-            // Don't break loading if tracking fails
+
             LOGGER.info("[Glazed Protection] Error tracking key '{}': {}", key, t.getMessage());
         }
     }
-    
-    /**
-     * Determine if a translation key is vanilla based on common patterns.
-     */
+
     @Unique
     private static boolean glazed$isVanillaKey(String key) {
         if (key == null) return false;
-        
-        // Common vanilla prefixes
-        return key.startsWith("key.") && !key.contains("-") && !key.contains("_") 
+
+        return key.startsWith("key.") && !key.contains("-") && !key.contains("_")
             || key.startsWith("gui.") && !key.contains("-")
             || key.startsWith("menu.")
             || key.startsWith("options.")
@@ -306,46 +279,31 @@ public class TranslationStorageMixin {
             || key.startsWith("painting.")
             || key.startsWith("trim_");
     }
-    
-    /**
-     * Extract mod ID from a translation key.
-     * Most mod keys follow the pattern: "category.modid.name" or "modid.category.name"
-     */
+
     @Unique
     private static String glazed$extractModId(String key) {
         if (key == null || !key.contains(".")) return null;
-        
+
         String[] parts = key.split("\\.");
         if (parts.length < 2) return null;
-        
-        // Common patterns:
-        // "key.meteor-client.open-gui" -> "meteor-client"
-        // "gui.xaero_minimap.settings" -> "xaero_minimap"
-        // "meteor-client.category.name" -> "meteor-client"
-        
-        // Check second part first (most common)
+
         String candidate = parts[1];
         if (candidate.contains("-") || candidate.contains("_")) {
             return candidate;
         }
-        
-        // Check first part
+
         candidate = parts[0];
         if (candidate.contains("-") || candidate.contains("_")) {
             return candidate;
         }
-        
-        // Fallback: use second part if it's not a vanilla category
+
         if (!glazed$isVanillaCategory(parts[0])) {
             return parts[1];
         }
-        
+
         return null;
     }
-    
-    /**
-     * Check if a string is a vanilla category prefix.
-     */
+
     @Unique
     private static boolean glazed$isVanillaCategory(String category) {
         return category.equals("key") || category.equals("gui") || category.equals("menu")

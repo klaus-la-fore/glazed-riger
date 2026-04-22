@@ -8,12 +8,6 @@ import net.minecraft.network.handler.DecoderHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-/**
- * Intercepts packet decoding to mark content created during deserialization.
- * Layer 1 of Sign Translation Exploit protection - Packet Context Tracking.
- * 
- * Wraps PacketCodec.decode() to set the processing flag during eager deserialization.
- */
 @Mixin(DecoderHandler.class)
 public class DecoderHandlerMixin {
 

@@ -21,18 +21,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Supplier;
 
-/**
- * Intercepts keybind resolution to protect user privacy.
- * Core component of Sign Translation Exploit protection - Layer 3.
- * 
- * Prevents servers from detecting:
- * 1. User's custom keybind settings (vanilla keybinds)
- * 2. Installed mods (mod keybinds)
- */
 @Mixin(KeybindTextContent.class)
 public class KeybindTextContentMixin {
     private static final Logger LOGGER = LoggerFactory.getLogger("Glazed-Protection");
-    
+
     @Shadow @Final
     private String key;
 
@@ -44,10 +36,6 @@ public class KeybindTextContentMixin {
         this.glazed$fromPacket = PacketContext.isProcessingPacket();
     }
 
-    /**
-     * Context-aware keybind interception.
-     * Intercepts the Supplier.get() call in getTranslated() method.
-     */
     @WrapOperation(
         method = "getTranslated",
         at = @At(value = "INVOKE", target = "Ljava/util/function/Supplier;get()Ljava/lang/Object;"),
@@ -59,50 +47,37 @@ public class KeybindTextContentMixin {
                 return original.call(supplier);
             }
         } catch (Throwable t) {
-            // During early initialization, allow everything
+
             return original.call(supplier);
         }
 
-        // Vanilla keybind - return cached default
         if (KeybindDefaults.hasDefault(key)) {
             String spoofedValue = KeybindDefaults.getDefault(key);
             glazed$logBlocked(key, spoofedValue);
             return Text.literal(spoofedValue);
         }
 
-        // Mod/unknown keybind — return as translatable so vanilla resolution
-        // handles it through TranslatableTextContentMixin
         glazed$logBlocked(key, key);
         return Text.translatable(key);
     }
-    
-    /**
-     * Check if integrated server is running without triggering early class loading.
-     */
+
     @Unique
     private static boolean glazed$isIntegratedServerRunning() {
         try {
-            // Delay class loading until runtime
+
             return net.minecraft.client.MinecraftClient.getInstance().isIntegratedServerRunning();
         } catch (Exception e) {
             return false;
         }
     }
 
-    /**
-     * Log a blocked keybind.
-     */
     @Unique
     private void glazed$logBlocked(String keybindName, String spoofedValue) {
         String realValue = glazed$readKeybindDisplay();
 
-        // Security logging (console only)
         TranslationProtectionHandler.logDetection(InterceptionType.KEYBIND, keybindName, realValue, spoofedValue);
     }
 
-    /**
-     * Read the keybind's current display value.
-     */
     @Unique
     private String glazed$readKeybindDisplay() {
         try {

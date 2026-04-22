@@ -7,115 +7,97 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Registry for tracking vanilla vs mod translation keys and keybinds.
- * Used by the protection system to determine what to block.
- */
 public class ModRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger("Glazed-Protection");
-    
-    /** Vanilla translation keys (always allowed) */
+
     private static final Set<String> vanillaTranslationKeys = ConcurrentHashMap.newKeySet();
-    
-    /** Vanilla keybinds (always allowed) */
+
     private static final Set<String> vanillaKeybinds = ConcurrentHashMap.newKeySet();
-    
-    /** Server resource pack translation keys (allowed for vanilla resolution) */
+
     private static final Set<String> serverPackKeys = ConcurrentHashMap.newKeySet();
-    
-    /** All known translation keys */
+
     private static final Set<String> allKnownTranslationKeys = ConcurrentHashMap.newKeySet();
-    
-    /** Reverse index: translation key -> mod ID */
+
     private static final Map<String, String> translationKeyToModId = new ConcurrentHashMap<>();
-    
-    /** Mod information registry */
+
     private static final Map<String, ModInfo> modRegistry = new ConcurrentHashMap<>();
 
     private static volatile boolean initialized = false;
-    
+
     private ModRegistry() {}
-    
-    // ==================== MOD INFO CLASS ====================
-    
-    /**
-     * Information about a tracked mod.
-     */
+
     public static class ModInfo {
         private final String modId;
         private final Set<String> translationKeys = ConcurrentHashMap.newKeySet();
         private final Set<String> keybinds = ConcurrentHashMap.newKeySet();
         private boolean whitelisted = false;
-        
+
         public ModInfo(String modId) {
             this.modId = modId;
         }
-        
+
         public String getModId() {
             return modId;
         }
-        
+
         public Set<String> getTranslationKeys() {
             return translationKeys;
         }
-        
+
         public Set<String> getKeybinds() {
             return keybinds;
         }
-        
+
         public boolean isWhitelisted() {
             return whitelisted;
         }
-        
+
         public void setWhitelisted(boolean whitelisted) {
             this.whitelisted = whitelisted;
         }
-        
+
         public void addTranslationKey(String key) {
             translationKeys.add(key);
         }
-        
+
         public void addKeybind(String keybind) {
             keybinds.add(keybind);
         }
-        
+
         public boolean hasTranslationKeys() {
             return !translationKeys.isEmpty();
         }
-        
+
         public boolean hasKeybinds() {
             return !keybinds.isEmpty();
         }
     }
-    
-    // ==================== TRANSLATION KEY TRACKING ====================
-    
+
     public static void recordTranslationKey(String modId, String key) {
         if (modId == null || key == null) return;
         allKnownTranslationKeys.add(key);
         translationKeyToModId.put(key, modId);
-        
-        // Update ModInfo
+
         ModInfo info = modRegistry.computeIfAbsent(modId, ModInfo::new);
         info.addTranslationKey(key);
     }
-    
+
     public static void recordVanillaTranslationKey(String key) {
         if (key == null) return;
         vanillaTranslationKeys.add(key);
         allKnownTranslationKeys.add(key);
     }
-    
+
     public static void recordServerPackKey(String key) {
         if (key == null) return;
         serverPackKeys.add(key);
         allKnownTranslationKeys.add(key);
     }
-    
+
     public static boolean isVanillaTranslationKey(String key) {
         return key != null && vanillaTranslationKeys.contains(key);
     }
-    
+
     public static boolean isServerPackTranslationKey(String key) {
         return key != null && serverPackKeys.contains(key);
     }
@@ -124,7 +106,7 @@ public class ModRegistry {
         if (key == null) return null;
         return translationKeyToModId.get(key);
     }
-    
+
     public static boolean isWhitelistedTranslationKey(String key) {
         if (key == null) return false;
         String modId = translationKeyToModId.get(key);
@@ -140,32 +122,30 @@ public class ModRegistry {
         translationKeyToModId.clear();
         LOGGER.info("[ModRegistry] Cleared translation key cache");
     }
-    
+
     public static void clearServerPackKeys() {
         serverPackKeys.clear();
         LOGGER.info("[ModRegistry] Cleared server pack keys");
     }
-    
-    // ==================== KEYBIND TRACKING ====================
-    
+
     public static void recordVanillaKeybind(String keybindName) {
         if (keybindName == null) return;
         vanillaKeybinds.add(keybindName);
     }
-    
+
     public static void recordModKeybind(String modId, String keybindName) {
         if (modId == null || keybindName == null) return;
         ModInfo info = modRegistry.computeIfAbsent(modId, ModInfo::new);
         info.addKeybind(keybindName);
     }
-    
+
     public static boolean isVanillaKeybind(String keybindName) {
         return keybindName != null && vanillaKeybinds.contains(keybindName);
     }
-    
+
     public static boolean isWhitelistedKeybind(String keybindName) {
         if (keybindName == null) return false;
-        // Find which mod owns this keybind
+
         for (ModInfo info : modRegistry.values()) {
             if (info.getKeybinds().contains(keybindName)) {
                 return info.isWhitelisted();
@@ -173,17 +153,15 @@ public class ModRegistry {
         }
         return false;
     }
-    
-    // ==================== MOD MANAGEMENT ====================
-    
+
     public static ModInfo getModInfo(String modId) {
         return modRegistry.get(modId);
     }
-    
+
     public static Set<String> getAllModIds() {
         return modRegistry.keySet();
     }
-    
+
     public static void setModWhitelisted(String modId, boolean whitelisted) {
         ModInfo info = modRegistry.get(modId);
         if (info != null) {
@@ -191,37 +169,33 @@ public class ModRegistry {
             LOGGER.info("[ModRegistry] Mod '{}' whitelist status: {}", modId, whitelisted);
         }
     }
-    
-    // ==================== INITIALIZATION ====================
-    
+
     public static void markInitialized() {
         initialized = true;
         LOGGER.info("[ModRegistry] Initialized with {} translation keys",
             allKnownTranslationKeys.size());
     }
-    
+
     public static boolean isInitialized() {
         return initialized;
     }
-    
-    // ==================== STATISTICS ====================
-    
+
     public static int getVanillaKeyCount() {
         return vanillaTranslationKeys.size();
     }
-    
+
     public static int getServerPackKeyCount() {
         return serverPackKeys.size();
     }
-    
+
     public static int getTranslationKeyCount() {
         return allKnownTranslationKeys.size();
     }
-    
+
     public static int getModCount() {
         return modRegistry.size();
     }
-    
+
     public static int getWhitelistedModCount() {
         return (int) modRegistry.values().stream()
             .filter(ModInfo::isWhitelisted)
