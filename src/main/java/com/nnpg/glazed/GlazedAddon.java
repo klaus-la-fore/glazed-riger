@@ -8,7 +8,7 @@ import com.nnpg.glazed.modules.pvp.*;
 import com.nnpg.glazed.protection.ModRegistry;
 import com.nnpg.glazed.protection.TranslationProtectionHandler;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
-import meteordevelopment.meteorclient.systems.commands.Commands;
+import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.orbit.EventHandler;
@@ -111,11 +111,8 @@ public class GlazedAddon extends MeteorAddon {
         Modules.get().add(new PremiumTunnelBaseFinder());
         Modules.get().add(new AdminList());
         Modules.get().add(new AutoTreeFarmer());
-    }
 
-    @Override
-    public void onRegisterCommands(Commands commands) {
-        commands.add(new OrderItemCommand());
+        Commands.add(new OrderItemCommand());
     }
 
     @EventHandler
