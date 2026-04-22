@@ -1,5 +1,4 @@
 # Glazed
-
 <p align="center">
   <img src="https://nnpg.dev/Glazedlogo.png" alt="Glazed Addon Banner" width="300"/>
 </p>
@@ -25,117 +24,98 @@
 
 ### Main Modules (39)
 
-| Module                     | Description                                                                   |
-| -------------------------- | ----------------------------------------------------------------------------- |
-| Admin List                 | List of admins - bot stops when admin detected (not fully implemented)        |
-| AH Sell                    | Automatically sells all hotbar items using /ah sell                           |
-| AH Sniper                  | Snipes items from auction house for cheap prices                              |
-| Auto Blaze Rod Order       | Buys/sells blaze rods in orders for profit (FAST MODE)                        |
-| Auto Order                 | Automatically orders items from the server shop                               |
-| Auto Pearl Chain           | Chains pearls after teleport detection                                        |
-| Auto Sell                  | Automatically sells items                                                     |
-| Auto Shulker Order         | Buys shulkers + sells in orders with player targeting & blacklist             |
-| Auto Shulker Shell Order   | Buys shulker shells + sells in orders for profit (FAST MODE)                  |
-| Auto Totem Order           | Buys totems + sells in orders with player targeting & blacklist               |
-| Auto Tree Farmer           | Automated tree farming with replanting                                        |
-| Blaze Rod Dropper          | Buys blaze rods + drops them                                                  |
-| Coord Snapper              | Copies coordinates to clipboard + optional webhook                            |
-| Crate Buyer                | Automatically buys common crate items                                         |
-| Emergency Seller           | Panic-sells selected items                                                    |
-| Freecam Mining             | Freecam with real-position mining override                                    |
-| Hide Scoreboard            | Hides sidebar scoreboard                                                      |
-| Home Reset                 | Runs /delhome + /sethome for a selected slot                                  |
-| No Block Interact          | Pearl through containers by blocking GUI interactions                         |
-| Order Dropper              | Processes orders + drops items                                                |
-| Order Sniper               | Snipes orders and sells for your price with blacklist                         |
-| Player Detection           | Detects players in the world                                                  |
+| Module | Description |
+|---|---|
+| Admin List | List of admins - bot stops when admin detected (not fully implemented) |
+| AH Sell | Automatically sells all hotbar items using /ah sell |
+| AH Sniper | Snipes items from auction house for cheap prices |
+| Auto Blaze Rod Order | Buys/sells blaze rods in orders for profit (FAST MODE) |
+| Auto Order | Automatically orders items from the server shop |
+| Auto Pearl Chain | Chains pearls after teleport detection |
+| Auto Sell | Automatically sells items |
+| Auto Shulker Order | Buys shulkers + sells in orders with player targeting & blacklist |
+| Auto Shulker Shell Order | Buys shulker shells + sells in orders for profit (FAST MODE) |
+| Auto Totem Order | Buys totems + sells in orders with player targeting & blacklist |
+| Auto Tree Farmer | Automated tree farming with replanting |
+| Blaze Rod Dropper | Buys blaze rods + drops them |
+| Coord Snapper | Copies coordinates to clipboard + optional webhook |
+| Crate Buyer | Automatically buys common crate items |
+| Emergency Seller | Panic-sells selected items |
+| Freecam Mining | Freecam with real-position mining override |
+| Hide Scoreboard | Hides sidebar scoreboard |
+| Home Reset | Runs /delhome + /sethome for a selected slot |
+| No Block Interact | Pearl through containers by blocking GUI interactions |
+| Order Dropper | Processes orders + drops items |
+| Order Sniper | Snipes orders and sells for your price with blacklist |
+| Player Detection | Detects players in the world |
 | Premium Tunnel Base Finder | Advanced tunnel mining with lava detection, pearl-through, and safety systems |
-| Rain Noti                  | Notifies when it starts raining with webhook support                          |
-| RTP Base Finder            | Mines to Y=-58 then runs /rtp east                                            |
-| RTP End Base Finder        | RTPs in the End searching for stashes                                         |
-| RTP Nether Base Finder     | RTPs Nether searching for stashes                                             |
-| RTPer                      | RTP to coordinates or find specific biomes                                    |
-| Shop Buyer                 | Buys selected items from PVP shop                                             |
-| Shulker Dropper            | Buys shulkers + drops them                                                    |
-| Spawner Dropper            | Drops all spawner loot                                                        |
-| Spawner Order              | Orders all spawner loot                                                       |
-| Spawner Protect            | Breaks spawner + stores it when player detected                               |
-| Storage Stealer            | Steals items from chests and shulkers                                         |
-| Tab Detector               | Detects when specific players join/leave                                      |
-| TPA All Macro              | Cycles players + sends /tpa or /tpahere                                       |
-| TPA Macro                  | Spam-sends /tpa or /tpahere + auto-clicks confirmation                        |
-| Tunnel Base Finder         | Mines downward, then uses #tunnel horizontally                                |
-| UI Helper                  | Helps perform various UI tasks automatically                                  |
+| Rain Noti | Notifies when it starts raining with webhook support |
+| RTP Base Finder | Mines to Y=-58 then runs /rtp east |
+| RTP End Base Finder | RTPs in the End searching for stashes |
+| RTP Nether Base Finder | RTPs Nether searching for stashes |
+| RTPer | RTP to coordinates or find specific biomes |
+| Shop Buyer | Buys selected items from PVP shop |
+| Shulker Dropper | Buys shulkers + drops them |
+| Spawner Dropper | Drops all spawner loot |
+| Spawner Order | Orders all spawner loot |
+| Spawner Protect | Breaks spawner + stores it when player detected |
+| Storage Stealer | Steals items from chests and shulkers |
+| Tab Detector | Detects when specific players join/leave |
+| TPA All Macro | Cycles players + sends /tpa or /tpahere |
+| TPA Macro | Spam-sends /tpa or /tpahere + auto-clicks confirmation |
+| Tunnel Base Finder | Mines downward, then uses #tunnel horizontally |
+| UI Helper | Helps perform various UI tasks automatically |
 
 ### ESP Modules (27)
 
-| Module                 | Description                                         |
-| ---------------------- | --------------------------------------------------- |
-| 1x1x1 Holes            | Highlights small player-made air holes              |
-| Advanced Stash Finder  | Stash finder with webhook + auto disconnect         |
-| Bedrock Void ESP       | ESP for bedrock void patterns                       |
-| Beehive ESP            | Detects full beehives with threading + tracer       |
-| Block Notifier         | Notifies when selected blocks appear + ESP          |
-| Chunk Finder           | Finds suspicious chunk patterns                     |
-| Cluster Finder         | ESP for amethyst clusters + buds                    |
-| Collectible ESP        | Highlights framed collectibles + banners            |
-| Covered Hole           | Detects covered holes with performance optimization |
-| Deepslate ESP          | ESP for deepslate variants                          |
-| Dripstone ESP          | Detects long dripstones with threading              |
-| Drowned Trident ESP    | Highlights drowned with tridents                    |
-| Fake Scoreboard        | Custom Glazed scoreboard overlay                    |
-| Hole Tunnel Stairs ESP | Highlights holes, tunnels, stairs                   |
-| Invis ESP              | 3D hitbox rendering for invisible players and mobs  |
-| Kelp ESP               | Highlights suspicious kelp chunk patterns           |
-| Light ESP              | Light source detection with thermal color rendering |
-| Llama ESP              | Detects llamas with tracers + webhook               |
-| Pillager ESP           | ESP for pillagers + tracers + webhook               |
-| Piston ESP             | ESP for pistons + sticky pistons                    |
-| Region Map             | DonutSMP region map with location display           |
-| Rotated Deepslate ESP  | Highlights rotated deepslate blocks                 |
-| Skeleton ESP           | Renders skeleton model inside players               |
-| Spawner Notifier       | Notifies when spawners are detected + ESP           |
-| Sweet Berry ESP        | Detects berry bushes at specific growth stages      |
-| Villager ESP           | Detects villagers + zombie villagers                |
-| Vine ESP               | Highlights vines touching the ground                |
-| Wandering ESP          | Detects wandering traders                           |
+| Module | Description |
+|---|---|
+| 1x1x1 Holes | Highlights small player-made air holes |
+| Advanced Stash Finder | Stash finder with webhook + auto disconnect |
+| Bedrock Void ESP | ESP for bedrock void patterns |
+| Beehive ESP | Detects full beehives with threading + tracer |
+| Block Notifier | Notifies when selected blocks appear + ESP |
+| Chunk Finder | Finds suspicious chunk patterns |
+| Cluster Finder | ESP for amethyst clusters + buds |
+| Collectible ESP | Highlights framed collectibles + banners |
+| Covered Hole | Detects covered holes with performance optimization |
+| Deepslate ESP | ESP for deepslate variants |
+| Dripstone ESP | Detects long dripstones with threading |
+| Drowned Trident ESP | Highlights drowned with tridents |
+| Fake Scoreboard | Custom Glazed scoreboard overlay |
+| Hole Tunnel Stairs ESP | Highlights holes, tunnels, stairs |
+| Invis ESP | 3D hitbox rendering for invisible players and mobs |
+| Kelp ESP | Highlights suspicious kelp chunk patterns |
+| Light ESP | Light source detection with thermal color rendering |
+| Llama ESP | Detects llamas with tracers + webhook |
+| Pillager ESP | ESP for pillagers + tracers + webhook |
+| Piston ESP | ESP for pistons + sticky pistons |
+| Region Map | DonutSMP region map with location display |
+| Rotated Deepslate ESP | Highlights rotated deepslate blocks |
+| Skeleton ESP | Renders skeleton model inside players |
+| Spawner Notifier | Notifies when spawners are detected + ESP |
+| Sweet Berry ESP | Detects berry bushes at specific growth stages |
+| Villager ESP | Detects villagers + zombie villagers |
+| Vine ESP | Highlights vines touching the ground |
+| Wandering ESP | Detects wandering traders |
 
 ### PvP Modules (13)
 
-| Module               | Description                                        |
-| -------------------- | -------------------------------------------------- |
-| Aim Assist           | Aims at entities (Grim AC v3 bypass)               |
-| Anchor Macro         | Automatically charges and explodes respawn anchors |
-| Anti Trap            | Escape armor stands + minecart traps               |
-| Auto Double Hand     | Switches to totem after pop                        |
-| Auto Inv Totem       | Moves totems to offhand after pop in inventory     |
-| Breach Swap          | Mace swap on attack + return                       |
-| Crystal Macro        | Fast crystal placing                               |
-| Double Anchor Macro  | Places + charges 2 anchors                         |
-| Hover Totem          | Equips offhand totem when hovering in inventory    |
-| Key Pearl            | Switches + throws pearl on keybind                 |
-| Shield Breaker       | Axe swap + auto shield break then switch back      |
-| Sword Place Obsidian | Right-click obsidian then switch back              |
-| Wind Pearl Macro     | Throws pearl then wind charge                      |
-
----
-
-## 🔒 Security Features
-
-### Sign Translation Exploit Protection
-
-Glazed includes **permanent, built-in protection** against the Sign Translation Exploit:
-
-- ✅ **Always Active** - No configuration needed
-- ✅ **Automatic Detection** - Monitors suspicious server packets
-- ✅ **User Alerts** - Notifies you when servers attempt to probe for mods
-- ✅ **Privacy Protection** - Prevents servers from detecting installed mods
-- ✅ **Zero Performance Impact** - Efficient event-based monitoring
-
-**What is the Sign Translation Exploit?**
-A vulnerability that allows malicious servers to detect which mods you have installed by sending special translation keys. Glazed automatically detects and alerts you when a server attempts this.
-
-For technical details, see [SIGN_TRANSLATION_PROTECTION.md](SIGN_TRANSLATION_PROTECTION.md)
+| Module | Description |
+|---|---|
+| Aim Assist | Aims at entities (Grim AC v3 bypass) |
+| Anchor Macro | Automatically charges and explodes respawn anchors |
+| Anti Trap | Escape armor stands + minecart traps |
+| Auto Double Hand | Switches to totem after pop |
+| Auto Inv Totem | Moves totems to offhand after pop in inventory |
+| Breach Swap | Mace swap on attack + return |
+| Crystal Macro | Fast crystal placing |
+| Double Anchor Macro | Places + charges 2 anchors |
+| Hover Totem | Equips offhand totem when hovering in inventory |
+| Key Pearl | Switches + throws pearl on keybind |
+| Shield Breaker | Axe swap + auto shield break then switch back |
+| Sword Place Obsidian | Right-click obsidian then switch back |
+| Wind Pearl Macro | Throws pearl then wind charge |
 
 ---
 
@@ -188,7 +168,6 @@ Pair your Glazed setup with these built-in Meteor modules for max efficiency:
 ## 📢Join the Discord
 
 > 💬**[Join the Discord](https://discord.gg/glazedclient)** for:
->
 > - 💸Giveaways
 > - 📢Announcements
 > - 🔍Support
@@ -208,8 +187,8 @@ Pair your Glazed setup with these built-in Meteor modules for max efficiency:
    Download from: https://fabricmc.net/use/
 
 4. 🧩**Put Meteor Client and this addon in `.minecraft/mods`**
-   - Locate your `.minecraft` folder (type `%appdata%` on Windows search)
-   - Drop both `.jar` files inside `/mods`
+    - Locate your `.minecraft` folder (type `%appdata%` on Windows search)
+    - Drop both `.jar` files inside `/mods`
 
 5. 🚀**Launch Minecraft with the Fabric profile**
    Open the Meteor GUI with `Right Shift` and enjoy!

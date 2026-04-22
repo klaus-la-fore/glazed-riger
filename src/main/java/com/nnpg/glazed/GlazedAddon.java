@@ -1,4 +1,4 @@
-package com.nnpg.glazed.addon;
+package com.nnpg.glazed;
 
 import com.nnpg.glazed.commands.*;
 import com.nnpg.glazed.MyScreen;

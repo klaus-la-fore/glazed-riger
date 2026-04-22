@@ -14,7 +14,7 @@
   "icon": "assets/template/icon.png",
   "environment": "client",
   "entrypoints": {
-    "meteor": ["com.nnpg.glazed.addon.GlazedAddon"],
+    "meteor": ["com.nnpg.glazed.GlazedAddon"],
     "mixinsquared": ["com.nnpg.glazed.mixin.MeteorMixinCanceller"]
   },
   "mixins": ["glazed-mixins.json", "glazed-mixin.json"],
