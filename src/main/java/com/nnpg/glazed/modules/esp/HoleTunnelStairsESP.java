@@ -989,8 +989,8 @@ public class HoleTunnelStairsESP extends Module {
                         // Use merge to handle overlapping segments from different scan passes
                         diagonalTunnelBoxMap.merge(hash, dtb, (old, neu) -> {
                             // Keep the larger one if they overlap, or combine them
-                            if (neu.box.getXLength() * neu.box.getYLength() * neu.box.getZLength() >
-                                old.box.getXLength() * old.box.getYLength() * old.box.getZLength()) {
+                            if ((neu.box.maxX - neu.box.minX) * (neu.box.maxY - neu.box.minY) * (neu.box.maxZ - neu.box.minZ) >
+                                (old.box.maxX - old.box.minX) * (old.box.maxY - old.box.minY) * (old.box.maxZ - old.box.minZ)) {
                                 return neu;
                             }
                             return old;

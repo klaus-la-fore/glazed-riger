@@ -11,6 +11,7 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.entity.ProjectileEntitySimulator;
 import meteordevelopment.meteorclient.utils.render.NametagUtils;
+import meteordevelopment.meteorclient.utils.render.RenderUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
@@ -44,6 +45,23 @@ public class PearlLandingPredictor extends Module {
         .defaultValue(1)
         .min(1)
         .sliderMax(5)
+        .build()
+    );
+
+    private final Setting<Boolean> keepLastPos = sgGeneral.add(new BoolSetting.Builder()
+        .name("keep-last-pos")
+        .description("Keep rendering the landing spot after the player has landed.")
+        .defaultValue(true)
+        .build()
+    );
+
+    private final Setting<Integer> keepLastPosTimeout = sgGeneral.add(new IntSetting.Builder()
+        .name("keep-last-pos-timeout")
+        .description("How long (in seconds) to keep rendering the last landing spot.")
+        .defaultValue(10)
+        .min(1)
+        .sliderMax(60)
+        .visible(keepLastPos::get)
         .build()
     );
 
@@ -107,6 +125,13 @@ public class PearlLandingPredictor extends Module {
         .min(0.1)
         .sliderMax(1.0)
         .visible(() -> advancedRender.get())
+        .build()
+    );
+
+    private final Setting<Boolean> tracers = sgRender.add(new BoolSetting.Builder()
+        .name("tracers")
+        .description("Draw a line to the landing spot.")
+        .defaultValue(false)
         .build()
     );
 
@@ -194,18 +219,27 @@ public class PearlLandingPredictor extends Module {
 
     private static class PearlEntry {
         final int entityId;
-        String ownerName; 
-        UUID ownerUuid;   
+        String ownerName;
+        UUID ownerUuid;
         final Vector3d landingPos = new Vector3d();
         boolean isEstimated = false;
-        boolean isUnknown = false; 
+        boolean isUnknown = false;
         long timestamp;
+
+        boolean isRemoved = false;
+        long removedTime = 0;
 
         PearlEntry(int entityId, String ownerName, UUID ownerUuid) {
             this.entityId  = entityId;
             this.ownerName = ownerName;
             this.ownerUuid = ownerUuid;
             this.timestamp = System.currentTimeMillis();
+        }
+
+        boolean shouldRemove(boolean keep, int timeoutSec) {
+            if (!isRemoved) return false;
+            if (!keep) return true;
+            return System.currentTimeMillis() - removedTime > timeoutSec * 1000L;
         }
     }
 
@@ -322,16 +356,44 @@ public class PearlLandingPredictor extends Module {
         }
 
         
-        knownPearlIds.removeIf(id -> !activeIds.contains(id));
         
-        
-        synchronized (unknownPearls) {
-            unknownPearls.removeIf(entry -> !activeIds.contains(entry.entityId));
+        for (Deque<PearlEntry> deque : trackedPearls.values()) {
+            synchronized (deque) {
+                for (PearlEntry entry : deque) {
+                    if (!activeIds.contains(entry.entityId) && !entry.isRemoved) {
+                        entry.isRemoved = true;
+                        entry.removedTime = System.currentTimeMillis();
+                    }
+                }
+            }
         }
+        synchronized (unknownPearls) {
+            for (PearlEntry entry : unknownPearls) {
+                if (!activeIds.contains(entry.entityId) && !entry.isRemoved) {
+                    entry.isRemoved = true;
+                    entry.removedTime = System.currentTimeMillis();
+                }
+            }
+        }
+
+        
+        boolean keep = keepLastPos.get();
+        int timeout = keepLastPosTimeout.get();
+
+        for (Deque<PearlEntry> deque : trackedPearls.values()) {
+            synchronized (deque) {
+                deque.removeIf(entry -> entry.shouldRemove(keep, timeout));
+            }
+        }
+        synchronized (unknownPearls) {
+            unknownPearls.removeIf(entry -> entry.shouldRemove(keep, timeout));
+        }
+
+        
+        trackedPearls.values().removeIf(Deque::isEmpty);
         
         
-        
-        trackedPearls.keySet().removeIf(uuid -> !activePlayers.contains(uuid));
+        knownPearlIds.removeIf(id -> !activeIds.contains(id));
     }
 
     private boolean isAllowed(String name) {
@@ -444,6 +506,11 @@ public class PearlLandingPredictor extends Module {
             lc = lineColor.get();
         }
         
+        
+        if (tracers.get()) {
+            r.line(RenderUtils.center.x, RenderUtils.center.y, RenderUtils.center.z, pos.x, pos.y + half, pos.z, lc);
+        }
+
         
         r.box(pos.x - half, pos.y, pos.z - half,
               pos.x + half, pos.y + boxSize.get(), pos.z + half,
