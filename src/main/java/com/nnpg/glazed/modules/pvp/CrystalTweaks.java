@@ -19,6 +19,7 @@ import net.minecraft.util.hit.BlockHitResult;
 
 import java.util.HashSet;
 import java.util.Set;
+
 public class CrystalTweaks extends Module {
 
     private final SettingGroup sgTotemProtect  = settings.createGroup("Totem Slot Protection -- prevent accidental totem removal from offhand / backup slot");
@@ -58,6 +59,20 @@ public class CrystalTweaks extends Module {
             + "Set to 0 to only protect the offhand.")
         .defaultValue(9)
         .min(0).max(9)
+        .visible(totemProtectEnabled::get)
+        .build());
+
+    private final Setting<Boolean> restrictOffhandToTotems = sgTotemProtect.add(new BoolSetting.Builder()
+        .name("restrict-offhand-to-totems")
+        .description("Only allow Totems of Undying to be moved into the offhand slot.")
+        .defaultValue(true)
+        .visible(totemProtectEnabled::get)
+        .build());
+
+    private final Setting<Boolean> restrictBackupSlotToTotems = sgTotemProtect.add(new BoolSetting.Builder()
+        .name("restrict-backup-slot-to-totems")
+        .description("Only allow Totems of Undying to be moved into the configured backup hotbar slot.")
+        .defaultValue(true)
         .visible(totemProtectEnabled::get)
         .build());
 
@@ -108,6 +123,13 @@ public class CrystalTweaks extends Module {
         .description("Comma-separated hotbar slots (1-9) that are free to change. "
             + "Example: '1,2' allows slots 1 and 2. Leave empty to lock all slots.")
         .defaultValue("")
+        .visible(hotbarLockEnabled::get)
+        .build());
+
+    private final Setting<Boolean> allowManualHotbarMove = sgHotbarLock.add(new BoolSetting.Builder()
+        .name("allow-manual-move")
+        .description("Allow manually picking up and moving items in the hotbar while locked. Only hotkey-swapping is blocked.")
+        .defaultValue(true)
         .visible(hotbarLockEnabled::get)
         .build());
 
@@ -178,49 +200,91 @@ public class CrystalTweaks extends Module {
 
     public boolean shouldBlockSlotClick(int syncId, int slot, int button, SlotActionType actionType) {
         if (mc.player == null) return false;
+
+        // --- Totem Protect Logic ---
         if (totemProtectEnabled.get()) {
             int backupSlot0 = totemBackupSlot.get() - 1;
-            if (alwaysProtectOffhandTotem.get() && actionType == SlotActionType.SWAP && button == 40) {
-                if (mc.player.getOffHandStack().isOf(Items.TOTEM_OF_UNDYING)) {
-                    return true;
-                }
+
+            // 1. Prevent REMOVING a totem
+            if (alwaysProtectOffhandTotem.get() && (slot == 45 || (actionType == SlotActionType.SWAP && button == 40))) {
+                if (mc.player.getOffHandStack().isOf(Items.TOTEM_OF_UNDYING)) return true;
             }
-            if (alwaysProtectHotbarTotem.get() && backupSlot0 >= 0 && actionType == SlotActionType.SWAP && button == backupSlot0) {
-                if (mc.player.getInventory().getStack(backupSlot0).isOf(Items.TOTEM_OF_UNDYING)) {
-                    return true;
-                }
+            if (alwaysProtectHotbarTotem.get() && backupSlot0 >= 0 && (slot == 36 + backupSlot0 || (actionType == SlotActionType.SWAP && button == backupSlot0))) {
+                if (mc.player.getInventory().getStack(backupSlot0).isOf(Items.TOTEM_OF_UNDYING)) return true;
             }
-            if (alwaysProtectOffhandTotem.get() && syncId == 0 && slot == 45) {
-                if (mc.player.getOffHandStack().isOf(Items.TOTEM_OF_UNDYING)) {
-                    return true;
-                }
-            }
-            if (alwaysProtectHotbarTotem.get() && backupSlot0 >= 0 && syncId == 0 && slot == 36 + backupSlot0) {
-                if (mc.player.getInventory().getStack(backupSlot0).isOf(Items.TOTEM_OF_UNDYING)) {
-                    return true;
-                }
-            }
+
+            // 2. Pop Lock (locked against clicks)
             if (popLockTimer > 0 && syncId == 0) {
                 if (slot == 45) return true;
                 if (backupSlot0 >= 0 && slot == 36 + backupSlot0) return true;
             }
+
+            // 3. Prevent INSERTING non-totems
+            if (restrictOffhandToTotems.get()) {
+                if (slot == 45 || (actionType == SlotActionType.SWAP && button == 40)) {
+                    if (!isIncomingItemTotem(slot, button, actionType)) return true;
+                }
+            }
+            if (restrictBackupSlotToTotems.get() && backupSlot0 >= 0) {
+                if (slot == 36 + backupSlot0 || (actionType == SlotActionType.SWAP && button == backupSlot0)) {
+                    if (!isIncomingItemTotem(slot, button, actionType)) return true;
+                }
+            }
         }
+
+        // --- Cursor Guard ---
         if (cursorGuardEnabled.get() && mc.currentScreen != null) {
             if (actionType == SlotActionType.PICKUP || actionType == SlotActionType.QUICK_CRAFT) {
                 return true;
             }
         }
-        if (hotbarLockEnabled.get() && syncId == 0) {
-            int affected = resolveAffectedHotbarSlot(slot, button, actionType);
-            if (affected >= 0) {
-                Set<Integer> whitelist = parseWhitelistSlots();
-                if (!whitelist.contains(affected)) {
+
+        // --- Hotbar Lock ---
+        if (hotbarLockEnabled.get()) {
+            int hotbarSlot = -1;
+            if (slot >= 0 && slot < mc.player.currentScreenHandler.slots.size()) {
+                var s = mc.player.currentScreenHandler.getSlot(slot);
+                if (s.inventory == mc.player.getInventory() && s.getIndex() >= 0 && s.getIndex() <= 8) {
+                    hotbarSlot = s.getIndex();
+                }
+            }
+
+            Set<Integer> whitelist = parseWhitelistSlots();
+
+            // Check hotkey target (SWAP)
+            if (actionType == SlotActionType.SWAP && button >= 0 && button <= 8) {
+                if (!whitelist.contains(button)) return true;
+            }
+
+            // Check hovered slot
+            if (hotbarSlot >= 0 && !whitelist.contains(hotbarSlot)) {
+                // Block hotkeys and shift-clicks. Allow manual mouse actions if enabled.
+                // Added QUICK_CRAFT to support dragging/fast clicks.
+                if (allowManualHotbarMove.get() && (actionType == SlotActionType.PICKUP || actionType == SlotActionType.PICKUP_ALL || actionType == SlotActionType.QUICK_CRAFT)) {
+                    // Allow manual move
+                } else {
                     return true;
                 }
             }
         }
 
         return false;
+    }
+
+    private boolean isIncomingItemTotem(int slot, int button, SlotActionType actionType) {
+        if (mc.player == null || mc.player.currentScreenHandler == null) return false;
+
+        if (actionType == SlotActionType.SWAP || actionType == SlotActionType.QUICK_MOVE) {
+            if (slot >= 0 && slot < mc.player.currentScreenHandler.slots.size()) {
+                var stack = mc.player.currentScreenHandler.getSlot(slot).getStack();
+                return stack.isEmpty() || stack.isOf(Items.TOTEM_OF_UNDYING);
+            }
+        } else if (actionType == SlotActionType.PICKUP || actionType == SlotActionType.PICKUP_ALL) {
+            var stack = mc.player.currentScreenHandler.getCursorStack();
+            return stack.isEmpty() || stack.isOf(Items.TOTEM_OF_UNDYING);
+        }
+
+        return true;
     }
 
     public boolean shouldBlockInteractBlock(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult) {
@@ -240,17 +304,6 @@ public class CrystalTweaks extends Module {
         }
 
         return false;
-    }
-
-    private int resolveAffectedHotbarSlot(int slot, int button, SlotActionType actionType) {
-        if (actionType == SlotActionType.SWAP && button >= 0 && button <= 8) {
-            return button;
-        }
-        if ((actionType == SlotActionType.PICKUP || actionType == SlotActionType.QUICK_MOVE)
-                && slot >= 36 && slot <= 44) {
-            return slot - 36;
-        }
-        return -1;
     }
 
     private Set<Integer> parseWhitelistSlots() {

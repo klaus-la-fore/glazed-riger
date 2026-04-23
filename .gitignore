@@ -33,5 +33,5 @@ bin/
 run/
 # temp files
 
-temp/
+DEVNODE/
 gradlew
