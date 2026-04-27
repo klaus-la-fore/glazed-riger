@@ -1,9 +1,14 @@
 package com.nnpg.glazed;
 
+import com.nnpg.glazed.commands.*;
+import com.nnpg.glazed.MyScreen;
 import com.nnpg.glazed.modules.esp.*;
 import com.nnpg.glazed.modules.main.*;
 import com.nnpg.glazed.modules.pvp.*;
+import com.nnpg.glazed.protection.ModRegistry;
+import com.nnpg.glazed.protection.TranslationProtectionHandler;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
+import meteordevelopment.meteorclient.commands.Commands;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.orbit.EventHandler;
@@ -11,8 +16,11 @@ import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GlazedAddon extends MeteorAddon {
+    private static final Logger LOGGER = LoggerFactory.getLogger("Glazed");
 
     public static final Category CATEGORY = new Category("Glazed", new ItemStack(Items.CAKE));
     public static final Category esp = new Category("Glazed ESP ", new ItemStack(Items.VINE));
@@ -22,6 +30,8 @@ public class GlazedAddon extends MeteorAddon {
 
     @Override
     public void onInitialize() {
+        LOGGER.debug("[Glazed] Initializing protection modules");
+        
         Modules.get().add(new SpawnerProtect());
         Modules.get().add(new AntiTrap());
         Modules.get().add(new CoordSnapper());
@@ -101,6 +111,8 @@ public class GlazedAddon extends MeteorAddon {
         Modules.get().add(new PremiumTunnelBaseFinder());
         Modules.get().add(new AdminList());
         Modules.get().add(new AutoTreeFarmer());
+
+        Commands.add(new OrderItemCommand());
     }
 
     @EventHandler
@@ -111,6 +123,9 @@ public class GlazedAddon extends MeteorAddon {
     @EventHandler
     private void onGameLeft(GameLeftEvent event) {
         MyScreen.resetSessionCheck();
+        // Clear protection caches on disconnect
+        TranslationProtectionHandler.clearCache();
+        ModRegistry.clearServerPackKeys();
     }
 
     @Override
