@@ -23,3 +23,5 @@ public class GamblingDropperRig extends Module {
         return forcedSeed.get();
     }
 }
+
+gradlew build -Dorg.gradle.java.home=C:\\PROGRA~1\\Java\\jdk-21.0.10
