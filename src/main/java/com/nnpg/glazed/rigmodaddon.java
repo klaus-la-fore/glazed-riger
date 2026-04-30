@@ -10,18 +10,16 @@ public class GamblingDropperRig extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     
     private final Setting<Integer> forcedSeed = sgGeneral.add(new IntSetting.Builder()
-        .name(\"forced-seed\")
-        .description(\"The seed to force for the dropper.\")
+        .name("forced-seed")
+        .description("The seed to force for the dropper.")
         .defaultValue(0xDEADBEEF)
         .build());
 
     public GamblingDropperRig() {
-        super(GlazedAddon.CATEGORY, \"gambling-dropper-rig\", \"Forces RNG seed for DonutSMP droppers.\");
+        super(GlazedAddon.CATEGORY, "gambling-dropper-rig", "Forces RNG seed for DonutSMP droppers.");
     }
 
     public int getRiggedSeed() {
         return forcedSeed.get();
     }
 }
-
-gradlew build -Dorg.gradle.java.home=C:\\PROGRA~1\\Java\\jdk-21.0.10
